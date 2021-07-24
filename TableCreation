@@ -1,0 +1,144 @@
+DROP TABLE Invoice;
+DROP TABLE Services;
+DROP TABLE Reservations;
+DROP TABLE Rooms;
+DROP TABLE Hotel;
+DROP TABLE Customer;
+CREATE TABLE Customer -- Create Customer Table
+(
+  customerID          NUMBER,
+  firstName           VARCHAR2(50),
+  lastName            VARCHAR2(50),
+  address             VARCHAR2(50),
+  phoneNum            VARCHAR2(50),
+  creditCard          VARCHAR2(50),
+  CONSTRAINT customer_pk
+    PRIMARY KEY (customerID)
+);
+
+CREATE TABLE Hotel -- Create Hotel Table
+(
+  hotelBranchID         Number,
+  street                VARCHAR2(50),
+  city                  VARCHAR2(50),
+  state_                VARCHAR2(50),
+  phone                 VARCHAR2(50),
+  hotelStatus           VARCHAR2(50),
+  hotelName             VARCHAR2(50),
+  CONSTRAINT hotel_pk
+    PRIMARY KEY (hotelBranchID)
+);
+
+
+Drop sequence hotelBranchID;
+CREATE sequence hotelBranchID -- Create sequence for Hotel Primary Key
+start with 1
+increment by 1;
+
+CREATE TABLE Services
+(
+  servicesID            Number,
+  typeOfService         VARCHAR2(50),
+  dateRequested         Date,
+  customerID            Number,
+  hotelBranchID         Number,
+  resID                 Number,
+  CONSTRAINT services_pk
+    PRIMARY KEY (servicesID),
+  CONSTRAINT customer_ID
+    FOREIGN KEY (customerID) 
+    REFERENCES Customer (customerID),
+  CONSTRAINT hotelBranch_ID
+    FOREIGN KEY (hotelBranchID) 
+    REFERENCES Hotel (hotelBranchID)
+);
+Drop sequence servicesID;
+CREATE sequence servicesID -- Create sequence for Services Primary Key 
+start with 1
+increment by 1;
+
+
+
+
+
+
+
+CREATE TABLE Rooms
+(
+  roomID                Number,
+  roomNum               Number,
+  roomType              VARCHAR2(50),
+  hotelBranchID         Number,
+  CONSTRAINT rooms_pk
+    PRIMARY KEY (roomID),
+  CONSTRAINT hotelBranch_ID2
+    FOREIGN KEY (hotelBranchID) 
+    REFERENCES Hotel (hotelBranchID)
+);
+Drop sequence roomID;
+CREATE sequence roomID -- Create sequence for Rooms Primary Key
+start with 1
+increment by 1;
+
+CREATE TABLE Reservations
+(
+  resID             Number,
+  resDate           Date,
+  checkInDate       Date,
+  checkOutDate      Date,
+  roomRate          Number,
+  resCancel         Number,
+  discountApplied   Number,
+  customerID        Number,
+  roomID            Number,
+  CONSTRAINT reservations_pk
+    PRIMARY KEY (resID),
+  CONSTRAINT customer_ID2
+    FOREIGN KEY (customerID) 
+    REFERENCES Customer (customerID),
+  CONSTRAINT rooms_ID
+    FOREIGN KEY (roomID) 
+    REFERENCES Rooms (roomID)
+);
+Drop sequence resID;
+CREATE sequence resID -- Create sequence for Reservations Primary Key
+start with 1
+increment by 1;
+
+CREATE TABLE Invoice
+(
+  invoiceID            NUMBER,
+  laundryCost          NUMBER,
+  foodOrderCost        NUMBER,
+  payPerView           NUMBER,
+  roomCost              NUMBER,
+  InvoiceTotal          NUMBER,
+  customerID            NUMBER,
+  resID                 NUMBER,
+  hotelBranchID         NUMBER,
+CONSTRAINT invoice_pk 
+    PRIMARY KEY (invoiceID),
+  CONSTRAINT customer_ID3
+    FOREIGN KEY (customerID) 
+    REFERENCES Customer (customerID),
+  CONSTRAINT res_ID2
+    FOREIGN KEY (resID) 
+    REFERENCES Reservations (resID), 
+  CONSTRAINT hotelBranch_ID1
+    FOREIGN KEY (hotelBranchID) 
+    REFERENCES hotel (hotelBranchID)   
+);
+
+ALTER TABLE Services -- Create relationship between Services and Reservations
+ADD CONSTRAINT resID
+    FOREIGN KEY (resID) 
+    REFERENCES Reservations (resID);
+-- Create pre existing Customers to use for procedures
+Insert into Customer (customerID, firstName, lastName, address, phoneNum, creditCard)
+Values(1, 'John', 'Smith', '1234 Applebees Way, Baltimore MD', '1234567890', '1234567890123456');
+Insert into Customer (customerID, firstName, lastName, address, phoneNum, creditCard)
+Values(2, 'Arnold', 'Patterson', '1235 Applebees Way, Baltimore MD', '1234567891', '1234567890123457');
+Insert into Customer (customerID, firstName, lastName, address, phoneNum, creditCard)
+Values(3, 'Mary', 'Wise', '1236 Applebees Way, Baltimore MD', '1234567892', '1234567890123458');
+  
+Commit;
