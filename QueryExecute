@@ -1,0 +1,140 @@
+Set SERVEROUTPUT ON;
+
+exec addnewhotel ('H1', 'York Street', 'New York', 'NY', '123-1234-1234');         
+exec addnewhotel ('H2', 'More Street', 'Baltimore', 'MD', '234-2345-2345');       
+exec addnewhotel ('H3', 'Fran Street', 'San Francisco', 'CA', '345-3456-3456');    
+exec addnewhotel ('H4', 'Anna Street', 'Annapolis', 'MD', '456-4567-4567');         
+exec addnewhotel ('H5', 'Balti Street', 'Baltimore', 'MD', '567-5678-5679');        
+
+--select * from hotel;        
+
+--2
+exec findhotel ('H3');                         
+exec findhotel ('H2');                          
+
+--3
+exec addroomtohotel ('H2', 'Double', 5);        
+exec addroomtohotel ('H2', 'Suite', 2);       
+exec addroomtohotel ('H1', 'Double', 10);       
+exec addroomtohotel ('H4', 'Conference', 1);    
+exec addroomtohotel ('H5', 'Conference', 1);   
+
+--select * from rooms;
+
+--4
+exec sellexistinghotel ('H1');
+
+--select * from hotel;        
+
+--5
+exec reporthotelsinstate ('MD');
+
+-----------------Part 1----------------
+
+-- [A] Make a reservation at hotel H2 by John Smith from Aug 1 - Aug 10 for a suite
+EXEC MakeReservation('John','Smith', 'H2', 'Suite', TO_DATE('2020-08-01','YYYY-MM-DD'), TO_DATE('2020-08-10','YYYY-MM-DD'),TO_DATE('2020-08-01','YYYY-MM-DD'));
+
+-- [B] Make any reservation at hotel H1 (already sold - should print out appropriate msg)
+EXEC MakeReservation('John','Smith', 'H1', 'Single', TO_DATE('2020-08-01','YYYY-MM-DD'), TO_DATE('2020-08-10','YYYY-MM-DD'),TO_DATE('2020-08-01','YYYY-MM-DD'));
+
+-- [C] Make a reservation by Arnold Patterson for conference hall at H4 from Jan 1 - Jan 5
+EXEC  MakeReservation('Arnold','Patterson', 'H4', 'Conference', TO_DATE('2020-01-01','YYYY-MM-DD'), TO_DATE('2020-01-05','YYYY-MM-DD'),TO_DATE('2020-01-01','YYYY-MM-DD'));
+
+-- [D] Make a reservation by Arnold Patterson for double room at H4 from Feb 10 - Feb 15
+EXEC  MakeReservation('Arnold','Patterson', 'H4', 'Double', TO_DATE('2020-02-10','YYYY-MM-DD'), TO_DATE('2020-02-15','YYYY-MM-DD'),TO_DATE('2020-02-10','YYYY-MM-DD'));
+
+-- [E] Find the reservation of Arnold Patterson (Jan 1 – Jan 5)
+EXEC FindReservation('Arnold','Patterson', TO_DATE('2020-01-01','YYYY-MM-DD'), TO_DATE('2020-01-05','YYYY-MM-DD'));
+
+-- [F] Make a reservation by Mary Wise for single at H4 from Jan 10 – Jan 15
+EXEC MakeReservation('Mary','Wise', 'H4', 'Single', TO_DATE('2020-01-10','YYYY-MM-DD'), TO_DATE('2020-01-15','YYYY-MM-DD'),TO_DATE('2020-01-10','YYYY-MM-DD'));
+
+-- [G] Make a reservation by Mary Wise for a double at H4 from Jan 1 – Jan 5
+EXEC MakeReservation('Mary','Wise', 'H4', 'Double', TO_DATE('2020-01-01','YYYY-MM-DD'), TO_DATE('2020-01-05','YYYY-MM-DD'),TO_DATE('2020-01-10','YYYY-MM-DD'));
+
+-- [H] Cancel reservation of Arnold Patterson for double room
+EXEC CancelReservation('Arnold','Patterson','Double');
+
+-- [I] Cancel reservation of John Smith
+EXEC CancelReservation('John','Smith','Single');
+
+-- [J] Show Cancelations
+EXEC ShowCancelations;
+
+--------------Part 2------------------
+
+Insert into invoice (invoiceID, laundryCost, foodOrderCost, payperview, roomCost, InvoiceTotal, customerID, resID, hotelBranchID)
+Values(1, 0, 0, 0, 9000, 9000, 1, 1, 2);
+Insert into invoice (invoiceID, laundryCost, foodOrderCost, payperview, roomCost, InvoiceTotal, customerID, resID, hotelBranchID)
+Values(2, 0, 0, 0, 5000, 5000, 2, 2, 4);
+Insert into invoice (invoiceID, laundryCost, foodOrderCost, payperview, roomCost, InvoiceTotal, customerID, resID, hotelBranchID)
+Values(3, 0, 0, 0, 2500, 2500, 2, 3, 4);
+Insert into invoice (invoiceID, laundryCost, foodOrderCost, payperview, roomCost, InvoiceTotal, customerID, resID, hotelBranchID)
+Values(4, 75, 300, 0, 1500, 1500, 3, 4, 4);
+Insert into invoice (invoiceID, laundryCost, foodOrderCost, payperview, roomCost, InvoiceTotal, customerID, resID, hotelBranchID)
+Values(5, 10, 300, 5, 1500, 1815, 3, 5, 4);
+
+--procedure 10, 7A on scenario
+exec changereservationdate('Arnold', 'Patterson', to_date('2020-02-01', 'YYYY-MM-DD'),to_date('2020-02-05', 'YYYY-MM-DD'), to_date('2020-01-01', 'YYYY-MM-DD'),to_date('2020-01-05', 'YYYY-MM-DD'));
+--select * from reservations;
+
+--procedure 11, 7B on scenario
+exec changereservationroomtype('Mary', 'Wise', 'Single');
+
+--procedure 12
+exec hotelres(4);
+
+--procedure 13
+exec showguestres('Mary', 'Wise');
+
+
+--procedure 14
+exec monthlyincomereport;
+
+
+--------------Part 3--------------
+
+
+--A. For reservation in item 6f add restaurant services for each day
+Exec AddServiceToReservation ('Mary','Wise', date'2020-01-10', date'2020-01-15', 'Food Order', date'2020-01-10');
+Exec AddServiceToReservation ('Mary','Wise', date'2020-01-10', date'2020-01-15', 'Food Order', date'2020-01-11');
+Exec AddServiceToReservation ('Mary','Wise', date'2020-01-10', date'2020-01-15', 'Food Order', date'2020-01-12');
+Exec AddServiceToReservation ('Mary','Wise', date'2020-01-10', date'2020-01-15', 'Food Order', date'2020-01-13');
+Exec AddServiceToReservation ('Mary','Wise', date'2020-01-10', date'2020-01-15', 'Food Order', date'2020-01-14');
+Exec AddServiceToReservation ('Mary','Wise', date'2020-01-10', date'2020-01-15', 'Food Order', date'2020-01-15');
+
+
+
+--B. For reservation in item 6g add restaurant services for each day 
+Exec AddServiceToReservation ('Mary','Wise', date'2020-01-01', date'2020-01-05', 'Food Order', date'2020-01-01');
+Exec AddServiceToReservation ('Mary','Wise', date'2020-01-01', date'2020-01-05', 'Food Order', date'2020-01-02');
+Exec AddServiceToReservation ('Mary','Wise', date'2020-01-01', date'2020-01-05', 'Food Order', date'2020-01-03');
+Exec AddServiceToReservation ('Mary','Wise', date'2020-01-01', date'2020-01-05', 'Food Order', date'2020-01-04');
+Exec AddServiceToReservation ('Mary','Wise', date'2020-01-01', date'2020-01-05', 'Food Order', date'2020-01-05');
+
+--C. For reservation in item 6g add 1 pay-per-view movie for the first day 
+Exec AddServiceToReservation ('Mary','Wise', date'2020-01-01', date'2020-01-05', 'PayPerView', date'2020-01-01');
+
+--D. For reservation in item 6g add laundry service  for one day (of your choice)
+Exec AddServiceToReservation ('Mary','Wise', date'2020-01-01', date'2020-01-05', 'Laundry', date'2020-01-03');
+
+--E. Show Reservation Services Report for Mary Wise’s reservation on Jan 1 – 5
+Exec ListReservationService ('Mary','Wise', date'2020-01-01', date'2020-01-05');
+
+--F. Show report for restaurant services
+Exec ShowServiceReport ('Food Order');
+
+--G. Show total services income report for hotel H4
+Exec TotalServiceIncomeRep ('H4');
+
+
+-------------Part 4-------------
+
+Exec ShowAvlRooms('H4');
+Exec RoomCheckoutReport('Mary', 'Wise');
+Exec IncomeByStateReport('MD');
+--Select * from services;
+
+-------------End-------------------
+
+
